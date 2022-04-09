@@ -7,30 +7,43 @@ public class ngui {
     private JTable table1;
 
     ngui(){
-        JFrame frame = new JFrame();
-        frame.setTitle("GameList");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(500, 400));
-        frame.add(panel1);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-
-        frame.setVisible(true);
-        list();
-    }
-    public void list(){
-        ArrayList<ArrayList> array_double = new ArrayList();
-        Object[][] arrr = new Object[0][];
         try {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM GAMELists");
-            /*while (resultSet.next()){
-                System.out.println(resultSet.getString("Name"));
-            }*/
+            // Connect to database
+            Connection connection = DriverManager.getConnection("jdbc:mysql://" + HOST + "/" + DATABASE_NAME, USERNAME, PASSWORD);
+
+            // Execute query
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + TABLE);
+
+            int i = 0;
+            // Iterate through the result set
+            while (resultSet.next()) {
+                Spiel[i] = resultSet.getString("Spiel");
+                Entwickler[i] = resultSet.getString("Entwickler");
+                Genre[i] = resultSet.getString("Genre");
+                JDV[i] = resultSet.getString("JDV");
+                i++;
+            }
+
+            gameInfo.add(Spiel);
+            gameInfo.add(Entwickler);
+            gameInfo.add(Genre);
+            gameInfo.add(JDV);
+
+            // Close connection
+            connection.close();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
         }
-        catch (SQLException ex){
-            System.out.print("failed", ex);
+
+        for (int i = 0; i < gameInfo.size(); i++){
+            String[] info = gameInfo.get(i);
+            for (int j = 0; j < info.length; j++){
+                if (info[j] != null) {
+                    System.out.println(info[j] + " ");
+                }
+            }
+            System.out.println();
         }
-        Object[][] inhalt = {{"Minecraft1", "Elon Musk", "2001"}, {"Minecraft 2", "Beff Jezos", "2002"}};
-        table1.setModel(new DefaultTableModel(inhalt, new String[]{"Name", "Publisher", "Jahr"}));
     }
 }
